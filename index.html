@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Jester: Roguelike Fate Tracker 🃏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(225, 29, 72, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(225, 29, 72, 0.6); }
+        }
+        .cyber-glow { animation: pulse-glow 3s infinite; }
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen text-slate-200 font-mono flex flex-col items-center p-4 sm:p-8 overflow-x-hidden">
+
+    <header class="w-full max-w-xl text-center py-6">
+        <h1 class="text-4xl font-black tracking-tighter text-rose-500 uppercase drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]">
+            🃏 Cyber Jester
+        </h1>
+        <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">Roguelike Mental State & Fate Alignment v1.0</p>
+    </header>
+
+    <main class="w-full max-w-xl bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm space-y-6">
+        
+        <div id="setup-view" class="space-y-6 fade-in">
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-rose-400 uppercase tracking-wider">1. Select Your Cyber Class</label>
+                <select id="playerClass" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-slate-300 focus:outline-none focus:border-rose-500 cursor-pointer">
+                    </select>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-rose-400 uppercase tracking-wider">2. Today's Broke Point</label>
+                <select id="breakPoint" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-slate-300 focus:outline-none focus:border-rose-500 cursor-pointer">
+                    </select>
+            </div>
+
+            <div class="flex flex-col gap-3 pt-2">
+                <button id="dealBtn" class="cyber-glow w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-4 rounded-xl uppercase tracking-wider text-lg transition duration-150 active:scale-95 border-b-4 border-rose-800 disabled:bg-slate-700 disabled:border-slate-800 disabled:text-slate-400 disabled:shadow-none">
+                    ♣️ Deal My Fate Card ♠️
+                </button>
+                <button id="randomBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl uppercase tracking-wide text-sm transition border border-slate-700 active:bg-slate-600">
+                    🎲 Randomize My Misery 🎲
+                </button>
+            </div>
+        </div>
+
+        <div id="result-view" class="hide space-y-6 fade-in">
+            <div id="card-container" class="min-h-[300px] flex items-center justify-center border-2 border-dashed border-slate-700 rounded-2xl p-6"></div>
+        </div>
+    </main>
+
+    <footer class="w-full max-w-xl text-center py-8 text-[10px] text-slate-600 space-y-2">
+        <p>Inspired by Balatro & the dark roguelike card games we all love.</p>
+        <p>Made by an exhausted dev. 100% Serverless Secure. Click Below to Support:</p>
+        <a href="YOUR_BUY_ME_A_COFFEE_LINK_HERE" target="_blank" class="inline-block mt-2 px-4 py-1.5 bg-slate-800 hover:bg-rose-900 border border-slate-700 hover:border-rose-700 text-slate-300 rounded-full transition duration-300">
+            ☕️ Buy the dev a Copium Coffee
+        </a>
+    </footer>
+
+    <script>
+        const cyberClasses = [
+            "Code Weaver (AI Prompt Engineer)", "IDE Masochist (Vite/Node.js Dev)", "StackOverflow Parasite",
+            "Legacy Code Necromancer", "Server-Room Martyr", "10x Developer (Self-Proclaimed)",
+            "Agile Scrum Cultist", "Digital Peddler (Etsy/Shopify Merchant)", "Timeline Martyr (Video Editor)",
+            "Pixel Sweeper (UI/UX Designer)", "Virtual Puppeteer (Avatar Manager)", "Algorithm Beggar (Content Creator)",
+            "Vaporware Architect", "Gacha Victim (Whale/F2P)", "Keyboard Strategist (Grand Strategy)",
+            "Crypto Bag-Holder", "Arbitrage Hustler", "Toucher of Grass (Mythical Entity)",
+            "Discord Mod (Unpaid Cyber-Janitor)", "NPC in Someone Else's Simulation", "Professional Shitposter",
+            "Corporate Ninja (Invisible Slacker)", "Existential Overthinker", "Doomscroller"
+        ];
+
+        const brokePoints = [
+            "AI hallucinated a completely fake API documentation.", "Copilot auto-completed an infinite loop and crashed my RAM.",
+            "Localhost runs flawlessly, Vercel deployment instantly bricks the app.", "Deployed a broken update on Friday 11 PM. It was me.",
+            "Accidentally pushed unencrypted API keys to a public repo.", "Found my exact bug on a 10-year-old Reddit thread, OP replied 'nvm fixed it' and vanished.",
+            "Lost a hardcore technical argument to an anime profile pic on X.", "My spaghetti code became sentient and asked for PTO.",
+            "Client requested a 'minor change' at 5:55 PM on a Friday.", "Adobe crashed at 99% render after 14 hours without auto-saving.",
+            "Buyer demanded a refund because they couldn't unzip a digital folder.", "The black-box algorithm shadowbanned my storefront overnight.",
+            "Marketing budget burned out in 3 seconds to unknown bots.", "Client wants a 'high-end 3D shatter effect' with a $10 budget.",
+            "Hit hard pity, only to lose the 50/50 to the absolute worst character.", "Managed my empire for 4 hours, collapsed from a random localized rebellion.",
+            "Forgot to cancel a $99/month SaaS subscription.", "Touched grass today. Graphics were okay, but gameplay sucked.",
+            "Staring at a blank screen while existential dread hits.", "Read a 'friendly reminder' HR email that was distinctly unfriendly.",
+            "Drank 3 coffees. Brain is dead but my heart is a drum set.", "My therapist told me my Copium prescription has expired."
+        ];
+
+        window.onload = () => {
+            const classSelect = document.getElementById('playerClass');
+            const brokeSelect = document.getElementById('breakPoint');
+            cyberClasses.forEach(c => classSelect.options.add(new Option(c, c)));
+            brokePoints.forEach(b => brokeSelect.options.add(new Option(b, b)));
+        };
+
+        document.getElementById('randomBtn').addEventListener('click', () => {
+            document.getElementById('playerClass').value = cyberClasses[Math.floor(Math.random() * cyberClasses.length)];
+            document.getElementById('breakPoint').value = brokePoints[Math.floor(Math.random() * brokePoints.length)];
+        });
+
+        document.getElementById('dealBtn').addEventListener('click', async () => {
+            const dealBtn = document.getElementById('dealBtn');
+            if (dealBtn.disabled) return; 
+
+            dealBtn.disabled = true;
+            dealBtn.classList.remove('cyber-glow');
+            dealBtn.innerText = "⏳ ALIGNING FATE...";
+
+            const pClass = document.getElementById('playerClass').value;
+            const pBroke = document.getElementById('breakPoint').value;
+
+            document.getElementById('setup-view').classList.add('hide');
+            document.getElementById('result-view').classList.remove('hide');
+            document.getElementById('card-container').innerHTML = `
+                <div class="text-center space-y-4 fade-in">
+                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-rose-500"></div>
+                    <p class="text-rose-400 text-xs uppercase tracking-widest font-bold animate-pulse">Shuffling the deck of misery...</p>
+                </div>
+            `;
+
+            try {
+                // 安全一枪：直接调用相对路径的 Vercel 后台 API，F12 绝对看不到任何 Key！
+                const response = await fetch('/api/roast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pClass, pBroke })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Server error');
+                }
+                
+                const resultJSON = await response.json();
+                renderFateCard(resultJSON);
+
+            } catch (error) {
+                alert('💥 Error: ' + error.message + '\n\n(Wait a few seconds and try again.)');
+                resetTracker();
+            } finally {
+                setTimeout(() => {
+                    dealBtn.disabled = false;
+                    dealBtn.classList.add('cyber-glow');
+                    dealBtn.innerText = "♣️ Deal My Fate Card ♠️";
+                }, 3000);
+            }
+        });
+
+        function renderFateCard(json) {
+            const container = document.getElementById('card-container');
+            let rarityStyle = "border-slate-700 text-slate-400";
+            if(json.card_rarity === "RARE") rarityStyle = "border-amber-500 text-amber-500 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]";
+            if(json.card_rarity === "LEGENDARY") rarityStyle = "border-purple-500 text-purple-400 drop-shadow-[0_0_20px_rgba(147,51,234,0.5)]";
+            if(json.card_rarity === "ANOMALY") rarityStyle = "border-rose-500 text-rose-500 drop-shadow-[0_0_25px_rgba(225,29,72,0.6)] animate-pulse";
+
+            container.innerHTML = `
+                <div class="w-full space-y-6 fade-in">
+                    <div class="bg-slate-950/90 border-4 ${rarityStyle} rounded-2xl p-6 text-center space-y-4 relative overflow-hidden">
+                        <div class="text-[10px] uppercase tracking-widest bg-slate-900 border border-slate-800 px-2 py-1 rounded inline-block font-bold">
+                            ✨ ${json.card_rarity} ✨
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase mt-2">${json.card_name}</h2>
+                        <div class="bg-slate-900/80 p-3.5 rounded-lg border border-slate-800/80 text-left mt-4 shadow-inner">
+                            <span class="text-[10px] font-bold text-rose-500 block uppercase tracking-wider mb-1">Passive Trigger:</span>
+                            <p class="text-xs sm:text-sm text-slate-300 italic">"${json.passive_skill}"</p>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-400 text-left leading-relaxed border-t border-slate-800/60 pt-4 font-sans">
+                            ${json.fate_analysis}
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="copyReport('${json.card_name}', '${json.card_rarity}', '${json.passive_skill}')" class="flex-1 bg-rose-600 hover:bg-rose-700 text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider text-white transition active:scale-95 border-b-4 border-rose-800">
+                            📋 Copy Text Report
+                        </button>
+                        <button onclick="resetTracker()" class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-xs px-5 rounded-xl text-slate-400 transition hover:text-slate-200">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyReport(name, rarity, passive) {
+            const reportText = `🃏 MY CYBER FATE TODAY:\n----------------------------------\nCard: [ ${name} ] (${rarity})\nPassive: "${passive}"\n----------------------------------\nCheck your own mental breakdown alignment here: ${window.location.href}`;
+            navigator.clipboard.writeText(reportText).then(() => {
+                alert("Report copied! Go paste it on Reddit / Discord.");
+            }).catch(err => {
+                alert("Failed to copy automatically, just screenshot it!");
+            });
+        }
+
+        function resetTracker() {
+            document.getElementById('setup-view').classList.remove('hide');
+            document.getElementById('result-view').classList.add('hide');
+        }
+    </script>
+</body>
+</html>
