@@ -141,8 +141,14 @@
                 renderFateCard(resultJSON);
 
             } catch (error) {
-                alert('💥 Error: ' + error.message + '\n\n(Wait a few seconds and try again.)');
-                resetTracker();
+                // 【毒舌降级机制】
+                const crashCard = {
+                    card_name: "SERVER ON FIRE 429",
+                    card_rarity: "ANOMALY",
+                    passive_skill: "Rate Limit Exceeded: Your aura is too toxic for Google's free tier.",
+                    // 这里把时间改成 10 秒，并加上一点挑衅的意味
+                    fate_analysis: "Congratulations. Your cyber-fate is so profoundly cursed that our API collapsed. Vercel is smoking. Stare at the ceiling for 10 seconds and try your luck again."
+                };
             } finally {
                 setTimeout(() => {
                     dealBtn.disabled = false;
